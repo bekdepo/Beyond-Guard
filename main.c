@@ -5,17 +5,17 @@
 #include <string.h>
 #include <openssl/md5.h>
 #include <mysql.h>
+#include "b64/b64.h"
 
 void getMD5(char *filename);
 int is_regular_file(const char *path);
 int isDirectory(const char *path);
+void scanDirectory(char *searchDir);
+void connectDB();
 
 int main (int argc, char **argv)
 {
-    DIR *midir;
-    struct dirent* info_archivo;
-    struct stat fileStat;
-    char fullpath[256];
+
 
     printf("MySQL client version: %s\n", mysql_get_client_info());
 
@@ -23,9 +23,69 @@ int main (int argc, char **argv)
     {
         perror("Please supply a folder name\n");
         exit(-1);
+    }else{
+        //scanDirectory(argv[1]);
+    }
+    connectDB();
+}
+
+// connect to MySQL database
+void connectDB(){
+
+    FILE *fin = fopen("secret/dbconfig.txt", "r");
+    char host[100];
+    char username[100];
+    char password[100];
+
+    if (fin == NULL){
+        printf("Can't open dbconfig.txt");
+        return;
     }
 
-    if ((midir=opendir(argv[1])) == NULL)
+    fscanf(fin, "%s", host);
+    fscanf(fin, "%s", username);
+    fscanf(fin, "%s", password);
+    char *plainHost = b64_decode(host, strlen(host));
+    char *plainUsername = b64_decode(username, strlen(username));
+    char *plainPassword = b64_decode(password, strlen(password));
+
+    fclose(fin);
+
+    MYSQL *con = mysql_init(NULL);
+
+    if (con == NULL)
+    {
+        fprintf(stderr, "%s\n", mysql_error(con));
+        exit(1);
+    }
+
+    if (mysql_real_connect(con, plainHost, plainUsername, plainPassword,
+          NULL, 0, NULL, 0) == NULL)
+    {
+      fprintf(stderr, "%s\n", mysql_error(con));
+      mysql_close(con);
+      exit(1);
+    }
+
+    if (mysql_query(con, "CREATE DATABASE testdb"))
+    {
+      fprintf(stderr, "%s\n", mysql_error(con));
+      mysql_close(con);
+      exit(1);
+    }
+
+    mysql_close(con);
+    exit(0);
+}
+
+// scans directory to see if any files match MD5 in database
+void scanDirectory(char *searchDir){
+    DIR *midir;
+    struct dirent* info_archivo;
+    struct stat fileStat;
+    char fullpath[256];
+
+    if ((midir=opendir(searchDir)) == NULL)
     {
         perror("Error in opendir");
         exit(-1);
@@ -34,7 +94,7 @@ int main (int argc, char **argv)
     while ((info_archivo = readdir(midir)) != 0)
     {
         //printf ("%s ", info_archivo->d_name);
-        strcpy (fullpath, argv[1]);
+        strcpy (fullpath, searchDir);
         strcat (fullpath, "/");
         strcat (fullpath, info_archivo->d_name);
         if (!stat(fullpath, &fileStat) && is_regular_file(fullpath))
@@ -57,7 +117,6 @@ int main (int argc, char **argv)
     }
     closedir(midir);
 }
-
 
 void getMD5(char *filename){
     unsigned char c[MD5_DIGEST_LENGTH];
