@@ -1,10 +1,16 @@
 #include "scan.h"
 
 #include <dirent.h>
+#include <stdio.h>
 #include <sys/stat.h>
 
+#include <database/connect.h>
+#include <util/file.h>
+#include <util/md5.h>
+
 // scans directory to see if any files match MD5 in database
-void scanDirectory(char *searchDir){
+// TODO: Make it recurse through each folder
+int scanDirectory(char *searchDir){
     DIR *midir;
     struct dirent* info_archivo;
     struct stat fileStat;
@@ -13,7 +19,7 @@ void scanDirectory(char *searchDir){
     if ((midir=opendir(searchDir)) == NULL)
     {
         perror("Error in opendir");
-        exit(-1);
+        return 1;
     }
 
     while ((info_archivo = readdir(midir)) != 0)
@@ -36,9 +42,17 @@ void scanDirectory(char *searchDir){
             printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
             printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
             */
-            getMD5(fullpath);
+            char md5string[33];
+            char *md5 = getMD5(fullpath, md5string);
+            if(md5 != NULL){
+                int result = isMD5InDB(md5);
+                if(result == 1){
+                    printf("%s located at %s is possibly a virus!\n", info_archivo->d_name, fullpath);
+                }
+            }
         }
         //printf("\n");
     }
     closedir(midir);
+    return 0;
 }

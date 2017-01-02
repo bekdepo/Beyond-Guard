@@ -18,9 +18,12 @@ int main (int argc, char **argv)
         perror("Please supply a folder name\n");
         return 1;
     }else{
-        //scanDirectory(argv[1]);
+        int pass = scanDirectory(argv[1]);
+        if(pass){
+            printf("Failed scanning directory for argument %s\n", argv[1]);
+        }
     }
-
+    closeDB();
 
     return 0;
 }

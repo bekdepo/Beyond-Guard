@@ -1,0 +1,1 @@
+This is not a virus but rather this file is used to test the antivirus in a unit test.

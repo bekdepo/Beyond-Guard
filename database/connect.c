@@ -46,17 +46,19 @@ int connectDB(){
     {
         finish_with_error(con);
     }
-
+    useDatabase("godefender");
     //createDatabase("testingjon123");
-    closeDB();
+    //closeDB();
 
     return 0;
 }
 
+// closes the global database connection
 void closeDB(){
     mysql_close(con);
 }
 
+// creates a new database, make sure database name is not bigger then 80 characters
 void createDatabase(char *db){
     char query[100];
     strcpy(query, "CREATE DATABASE ");
@@ -65,6 +67,44 @@ void createDatabase(char *db){
     {
         finish_with_error(con);
     }
+}
+
+void useDatabase(char *db){
+    char query[100];
+    strcpy(query, "USE ");
+    strcat(query, db);
+    if (mysql_query(con, query))
+    {
+        finish_with_error(con);
+    }
+}
+
+// returns 1 if MD5 string exist in database
+int isMD5InDB(char *md5){
+
+    char query[100];
+    strcpy(query, "SELECT 1 FROM signatures WHERE md5='");
+    strcat(query, md5);
+    strcat(query, "' LIMIT 1");
+
+    if (mysql_query(con, query))
+    {
+        finish_with_error(con);
+    }
+
+    MYSQL_RES *result = mysql_store_result(con);
+
+    if (result == NULL)
+    {
+        finish_with_error(con);
+    }
+    MYSQL_ROW row;
+    if ((row = mysql_fetch_row(result))){
+        mysql_free_result(result);
+        return 1;
+    }
+    mysql_free_result(result);
+    return 0;
 }
 
 // prints error message
