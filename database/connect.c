@@ -11,7 +11,7 @@ void finishWithError(MYSQL *con);
 
 MYSQL *con;
 
-// connect to MySQL database
+// connect to MySQL database, returns 0 if success
 int connectDB(){
 
     FILE *fin = fopen("secret/dbconfig.txt", "r");
@@ -21,7 +21,7 @@ int connectDB(){
 
     if (fin == NULL){
         printf("Can't open dbconfig.txt");
-        return 0;
+        return 1;
     }
 
     fscanf(fin, "%s", host);

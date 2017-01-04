@@ -7,6 +7,7 @@
 #include <database/connect.h>
 #include <scanner/scan.h>
 #include <util/md5.h>
+#include <unittest/testMD5.h>
 
 int main (int argc, char **argv)
 {
@@ -22,6 +23,10 @@ int main (int argc, char **argv)
         if(pass){
             printf("Failed scanning directory for argument %s\n", argv[1]);
         }
+    }
+    int testResult = testMD5();
+    if(testResult){
+        printf("Failed unit test");
     }
     closeDB();
 

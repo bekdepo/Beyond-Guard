@@ -8,8 +8,7 @@
 #include <util/file.h>
 #include <util/md5.h>
 
-// scans directory to see if any files match MD5 in database
-// TODO: Make it recurse through each folder
+// scans directory to see if any files match MD5 in databases
 int scanDirectory(char *searchDir){
     DIR *midir;
     struct dirent* info_archivo;
