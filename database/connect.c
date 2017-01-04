@@ -7,7 +7,7 @@
 
 #include <b64/b64.h>
 
-void finish_with_error(MYSQL *con);
+void finishWithError(MYSQL *con);
 
 MYSQL *con;
 
@@ -44,12 +44,9 @@ int connectDB(){
     if (mysql_real_connect(con, plainHost, plainUsername, plainPassword,
           NULL, 0, NULL, 0) == NULL)
     {
-        finish_with_error(con);
+        finishWithError(con);
     }
     useDatabase("godefender");
-    //createDatabase("testingjon123");
-    //closeDB();
-
     return 0;
 }
 
@@ -65,7 +62,7 @@ void createDatabase(char *db){
     strcat(query, db);
     if (mysql_query(con, query))
     {
-        finish_with_error(con);
+        finishWithError(con);
     }
 }
 
@@ -75,7 +72,7 @@ void useDatabase(char *db){
     strcat(query, db);
     if (mysql_query(con, query))
     {
-        finish_with_error(con);
+        finishWithError(con);
     }
 }
 
@@ -89,14 +86,14 @@ int isMD5InDB(char *md5){
 
     if (mysql_query(con, query))
     {
-        finish_with_error(con);
+        finishWithError(con);
     }
 
     MYSQL_RES *result = mysql_store_result(con);
 
     if (result == NULL)
     {
-        finish_with_error(con);
+        finishWithError(con);
     }
     MYSQL_ROW row;
     if ((row = mysql_fetch_row(result))){
@@ -108,7 +105,7 @@ int isMD5InDB(char *md5){
 }
 
 // prints error message
-void finish_with_error(MYSQL *con){
+void finishWithError(MYSQL *con){
     fprintf(stderr, "%s\n", mysql_error(con));
     mysql_close(con);
     exit(1);

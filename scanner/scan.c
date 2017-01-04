@@ -24,34 +24,28 @@ int scanDirectory(char *searchDir){
 
     while ((info_archivo = readdir(midir)) != 0)
     {
-        //printf ("%s ", info_archivo->d_name);
         strcpy (fullpath, searchDir);
         strcat (fullpath, "/");
+        if(strcmp(info_archivo->d_name, ".") ==0  || strcmp(info_archivo->d_name, "..") == 0){
+            //skip current directory and moving up a directory
+            continue;
+        }
         strcat (fullpath, info_archivo->d_name);
-        if (!stat(fullpath, &fileStat) && is_file(fullpath))
-        {
-            /*
-            printf((S_ISDIR(fileStat.st_mode))  ? "d" : "-");
-            printf((fileStat.st_mode & S_IRUSR) ? "r" : "-");
-            printf((fileStat.st_mode & S_IWUSR) ? "w" : "-");
-            printf((fileStat.st_mode & S_IXUSR) ? "x" : "-");
-            printf((fileStat.st_mode & S_IRGRP) ? "r" : "-");
-            printf((fileStat.st_mode & S_IWGRP) ? "w" : "-");
-            printf((fileStat.st_mode & S_IXGRP) ? "x" : "-");
-            printf((fileStat.st_mode & S_IROTH) ? "r" : "-");
-            printf((fileStat.st_mode & S_IWOTH) ? "w" : "-");
-            printf((fileStat.st_mode & S_IXOTH) ? "x" : "-");
-            */
+        if(isDirectory(fullpath)){
+            scanDirectory(fullpath);
+        }else if (!stat(fullpath, &fileStat) && isFile(fullpath)){
+
             char md5string[33];
             char *md5 = getMD5(fullpath, md5string);
             if(md5 != NULL){
                 int result = isMD5InDB(md5);
                 if(result == 1){
                     printf("%s located at %s is possibly a virus!\n", info_archivo->d_name, fullpath);
+                }else{
+                    printf("%s is not a virus.\n", info_archivo->d_name);
                 }
             }
         }
-        //printf("\n");
     }
     closedir(midir);
     return 0;
