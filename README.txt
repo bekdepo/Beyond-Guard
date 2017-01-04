@@ -2,6 +2,8 @@
 Open Source Antivirus Suite in C 
 Creator: Jonathan Chin
 
+This is software is in beta stage and not ready to be used in production yet.
+
 Currently the virus scanner computes an MD5 hash for each file and compares to see if its in the database of virus signatures.
 The database has been optimized with an index to find a match in logarithmic time. The virus signatures are
 from an open source repository of virus signatures that are actively maintained by malware researchers.  MD5 isn't the best
@@ -11,12 +13,11 @@ and even worse they are polymorphic viruses that can change their code thus chan
 blank lines at the end of its code and it will have a new MD5 hash. To get around this another approach would be to have an antivirus
 execute a virus in a sandbox(virtual environment) and analyze its behavior for malicious intent. This approach is also problematic
 because viruses can also detect if their in a sandbox and refuse to run making it difficult for the virus to analyze its behavior.  
-
-This is software is in beta stage and not ready to be used in production yet.
+This is where machine learning comes in to train the antivirus to recognize new types of viruses.
 
 Available Features:
 1. Command line file scanner that recurses through directories checking when provided a relative or absolute path
-2. Database with 27656190 active MD5 virus signatures
+2. Database with 27656190 active MD5 virus signatures(not show on github yet).
 
 TODO:
 1. Scan registry for malware
