@@ -15,18 +15,34 @@ MYSQL *con;
 int connectDB(){
 
     FILE *fin = fopen("secret/dbconfig.txt", "r");
-    char host[100];
-    char username[100];
-    char password[100];
+    int maxLength = 200;
+    char host[maxLength];
+    char username[maxLength];
+    char password[maxLength];
 
     if (fin == NULL){
         printf("Can't open dbconfig.txt");
         return 1;
     }
 
-    fscanf(fin, "%s", host);
-    fscanf(fin, "%s", username);
-    fscanf(fin, "%s", password);
+    if(fgets(host, maxLength, fin) == NULL){
+        printf("Can't read host from dbconfig.txt");
+        fclose(fin);
+        return 1;
+    }
+
+    if(fgets(username, maxLength, fin) == NULL){
+        printf("Can't read username from dbconfig.txt");
+        fclose(fin);
+        return 1;
+    }
+
+    if(fgets(password, maxLength, fin) == NULL){
+        printf("Can't read password from dbconfig.txt");
+        fclose(fin);
+        return 1;
+    }
+
     fclose(fin);
 
     char *plainHost = (char*)b64_decode(host, strlen(host));
@@ -45,8 +61,12 @@ int connectDB(){
           NULL, 0, NULL, 0) == NULL)
     {
         finishWithError(con);
+        return 1;
     }
-    useDatabase("godefender");
+    int result = useDatabase("godefender");
+    if(result){
+        return 1;
+    }
     return 0;
 }
 
@@ -55,31 +75,36 @@ void closeDB(){
     mysql_close(con);
 }
 
-// creates a new database, make sure database name is not bigger then 80 characters
-void createDatabase(char *db){
-    char query[100];
+// creates a new database returns 0 on sucess
+int createDatabase(char *db){
+    char query[strlen(db)+20];
     strcpy(query, "CREATE DATABASE ");
     strcat(query, db);
     if (mysql_query(con, query))
     {
         finishWithError(con);
+        return 1;
     }
+    return 0;
 }
 
-void useDatabase(char *db){
-    char query[100];
+// returns 0 if sucessfully uses a database
+int useDatabase(char *db){
+    char query[strlen(db)+5];
     strcpy(query, "USE ");
     strcat(query, db);
     if (mysql_query(con, query))
     {
         finishWithError(con);
+        return 1;
     }
+    return 0;
 }
 
 // returns 1 if MD5 string exist in database
 int isMD5InDB(char *md5){
 
-    char query[100];
+    char query[80];
     strcpy(query, "SELECT 1 FROM signatures WHERE md5='");
     strcat(query, md5);
     strcat(query, "' LIMIT 1");
@@ -108,7 +133,6 @@ int isMD5InDB(char *md5){
 void finishWithError(MYSQL *con){
     fprintf(stderr, "%s\n", mysql_error(con));
     mysql_close(con);
-    exit(1);
 }
 
 void printMySQLInfo(){

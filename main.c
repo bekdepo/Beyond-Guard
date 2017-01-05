@@ -13,6 +13,7 @@ int main (int argc, char **argv)
 {
     int result = connectDB();
     if (result){
+        printf("Failed to connect database, aborting...\n");
         return 1; // Can't connect to database
     }
     if (argc != 2){
