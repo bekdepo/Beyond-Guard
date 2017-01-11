@@ -2,9 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
 #include <mysql.h>
-
 #include <b64/b64.h>
 
 void finishWithError(MYSQL *con);

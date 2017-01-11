@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <openssl/md5.h>
 
 char *getMD5(char *filename, char *md5string){

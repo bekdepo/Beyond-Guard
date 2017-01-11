@@ -3,7 +3,6 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <sys/stat.h>
-
 #include <database/connect.h>
 #include <util/file.h>
 #include <util/md5.h>
@@ -25,7 +24,7 @@ int scanDirectory(char *searchDir){
     {
         strcpy (fullpath, searchDir);
         strcat (fullpath, "/");
-        if(strcmp(info_archivo->d_name, ".") ==0  || strcmp(info_archivo->d_name, "..") == 0){
+        if(strcmp(info_archivo->d_name, ".") == 0  || strcmp(info_archivo->d_name, "..") == 0){
             //skip current directory and moving up a directory
             continue;
         }
