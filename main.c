@@ -52,5 +52,5 @@ void testStack(){
     stackPop(&s);
     top = stackTop(&s);
     printf("Top is %s\n", top);
-
+    stackDestroy(&s);
 }
