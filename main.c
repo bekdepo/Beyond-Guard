@@ -16,8 +16,10 @@ void testStack();
 
 int main (int argc, char **argv)
 {
-    testStack();
-    getProcessList();
+    //testStack();
+    //getProcessList();
+    printAllProcesses();
+
     int result = connectDB();
     if (result){
         printf("Failed to connect database, aborting...\n");
