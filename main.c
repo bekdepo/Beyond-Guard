@@ -18,7 +18,8 @@ int main (int argc, char **argv)
 {
     //testStack();
     //getProcessList();
-    printAllProcesses();
+    //printAllProcesses();
+    //getFullPath(6004);
 
     int result = connectDB();
     if (result){

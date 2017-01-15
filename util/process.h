@@ -3,5 +3,6 @@
 
 void getProcessList();
 int printAllProcesses();
+void getFullPath(int pid);
 
 #endif // PROCESS_H_INCLUDED

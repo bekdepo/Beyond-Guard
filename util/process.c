@@ -90,3 +90,21 @@ int printAllProcesses(){
     }
     return 0;
 }
+
+// gets full path to executable of process based on pid
+void getFullPath(int pid){
+    HANDLE processHandle = NULL;
+    TCHAR filename[MAX_PATH];
+
+    processHandle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+    if (processHandle != NULL) {
+        if (GetModuleFileNameEx(processHandle, NULL, filename, MAX_PATH) == 0) {
+            printf("Failed to get module filename.\n");
+        } else {
+            printf("Module filename is: %s\n", filename);
+        }
+        CloseHandle(processHandle);
+    } else {
+        printf("Failed to open process.\n");
+    }
+}
